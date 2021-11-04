@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="header">
+      <ul class="nav">
+        <li><input type="file" id="file-input" /></li>
+  
+        <li><a href="">Peticiones</a>
+          <ul>
+            <li>
+              
+              <form>
+                <BUTTON id="enviar">Enviar</BUTTON>
+              </form>
+            </li>
+            <li><a href="">Filtrar informacion por fecha y usuario que reporta</a></li>
+            <li><a href="">Filtrar por fehca y codigo de error</a></li>
+          </ul>
+        </li>
+  
+  
+        <li><a href="">Ayuda</a>
+          <ul>
+            <li><a href="/datos">Informacion del estudiante</a></li>
+            <li><a href="/reporte">Documentacion</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  
+    <div id="botones">
+      <form id="post-form">
+        <input type="submit" id="api-info" value="Enviar">
+        <textarea id="entrada" rows="20" cols="50" name='u'></textarea>
+        <textarea id="salida" rows="20" cols="50" readonly></textarea>
+      </form>
+      <form action="">
+        <BUTTON id="reset" onclick="templates/index.html">Reset</BUTTON>
+      </form>
+    </div>
+  
+    <script>
+      function leerArchivo(e) {
+        var archivo = e.target.files[0];
+        if (!archivo) {
+          return;
+        }
+        var lector = new FileReader();
+        lector.onload = function (e) {
+          var contenido = e.target.result;
+          mostrarContenido(contenido);
+        };
+        lector.readAsText(archivo);
+      }
+  
+      function mostrarContenido(contenido) {
+        var elemento = document.getElementById('entrada');
+        elemento.innerHTML = contenido;
+      }
+  
+      document.getElementById('file-input')
+        .addEventListener('change', leerArchivo, false);
+    </script>
+
+
+    <script>
+      let post_form = document.getElementById("post-form");
+      let get_button = document.getElementById("get-button");
+      let messages = document.getElementById("messages");
+
+      post_form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        fetch("http://localhost:5000/events/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+          body: post_form.elements["entrada"].value,
+        }).then((res) => {
+          if (res.ok) {
+            messages.innerText = "OK";
+          }
+        });
+      });
+
+      get_button.addEventListener("click", (e) => {
+        e.preventDefault();
+        fetch("http://localhost:5000/events/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((res_txt) => {
+            messages.innerText = res_txt;
+          });
+      });
+    </script>
+  </body>
+</html>
