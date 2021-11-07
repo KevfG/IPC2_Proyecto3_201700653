@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/static/styles.css" rel="stylesheet" />
     <title>Document</title>
   </head>
   <body>
@@ -16,11 +17,13 @@
             <li>
               
               <form>
-                <BUTTON id="enviar">Enviar</BUTTON>
+                <BUTTON id="mostrar">Mostrar</BUTTON>
               </form>
             </li>
-            <li><a href="">Filtrar informacion por fecha y usuario que reporta</a></li>
-            <li><a href="">Filtrar por fehca y codigo de error</a></li>
+            <li><input type="text" placeholder="Inserte fecha" id= "fecha"> <input type="submit" id = "send"></li>
+            <li><input type="submit" id = "pop" value="Filtro Rango de fechas"></li>
+            <li><a href="">Graficas</a></li>
+            <li><input type="submit" id = "historial" value="Historial PDF"></li>
           </ul>
         </li>
   
@@ -37,16 +40,20 @@
     <div id="botones">
       <form id="post-form">
         <input type="submit" id="api-info" value="Enviar">
-        <textarea id="entrada" rows="20" cols="50" name='u'></textarea>
+        <textarea id="entrada" rows="20" cols="50" name='u' readonly></textarea>
         <textarea id="salida" rows="20" cols="50" readonly></textarea>
       </form>
       <form action="">
-        <BUTTON id="reset" onclick="templates/index.html">Reset</BUTTON>
+        <BUTTON id="reset">Reset</BUTTON>
       </form>
     </div>
+
+    <div id="info" style="background-color: aqua;"></div>
   
     <script>
+      
       function leerArchivo(e) {
+        boton.disabled = false;
         var archivo = e.target.files[0];
         if (!archivo) {
           return;
@@ -73,9 +80,15 @@
       let post_form = document.getElementById("post-form");
       let get_button = document.getElementById("get-button");
       let messages = document.getElementById("messages");
+      const boton = document.getElementById("api-info");
+      let enviar = document.getElementById("send");
+      let resumen = document.getElementById("pop");
+      let historial = document.getElementById("historial");
+      let resetear = document.getElementById("reset");
 
       post_form.addEventListener("submit", (e) => {
         e.preventDefault();
+        boton.disabled = true;
         fetch("http://localhost:5000/events/", {
           method: "POST",
           headers: {
@@ -89,8 +102,9 @@
         });
       });
 
-      get_button.addEventListener("click", (e) => {
+      mostrar.addEventListener("click", (e) => {
         e.preventDefault();
+        mostrar.disabled = true;
         fetch("http://localhost:5000/events/", {
           method: "GET",
           headers: {
@@ -103,9 +117,103 @@
             }
           })
           .then((res_txt) => {
-            messages.innerText = res_txt;
+            salida.innerText = res_txt;
           });
       });
+//-------------------------------------------------------------------------------
+      enviar.addEventListener("submit", (e) => {
+        e.preventDefault();
+        boton.disabled = true;
+        fetch("http://localhost:5000/events/ff/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+          body: post_form.elements["fecha"].value,
+        }).then((res) => {
+          if (res.ok) {
+            messages.innerText = "OK";
+          }
+        });
+      });
+
+      enviar.addEventListener("click", (e) => {
+        e.preventDefault();
+        mostrar.disabled = true;
+        fetch("http://localhost:5000/events/ff/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((res_txt) => {
+            info.innerText = res_txt;
+          });
+      });
+      //----------------------------------------------------
+
+      resumen.addEventListener("click", (e) => {
+        e.preventDefault();
+        mostrar.disabled = true;
+        fetch("http://localhost:5000/events/all/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((res_txt) => {
+            info.innerText = res_txt;
+          });
+      });
+
+      historial.addEventListener("click", (e) => {
+        e.preventDefault();
+        mostrar.disabled = true;
+        fetch("http://localhost:5000/events/history/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((res_txt) => {
+            info.innerText = res_txt;
+          });
+      });
+
+      resetear.addEventListener("click", (e) => {
+        boton.disabled = false;
+        mostrar.disabled = false;
+        fetch("http://localhost:5000/events/remove/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.text();
+            }
+          })
+          .then((res_txt) => {
+            info.innerText = res_txt;
+          });
+      }
+      );
     </script>
   </body>
 </html>

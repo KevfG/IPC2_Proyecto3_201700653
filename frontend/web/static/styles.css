@@ -1,0 +1,40 @@
+html {
+	background-color: #F4F4F4;
+}
+
+body {
+  width: 1000px;
+  margin: 0 auto;
+  background-color: #F4F4F4;
+  padding: 40px 40px 40px;
+}
+
+#header {
+	border:1px solid black;
+	width:92.25%;
+	height:auto;
+	padding:5px;
+	background:#F4F4F4;
+}
+
+#botones {
+	border:1px solid black;
+	width:92.25%;
+	height:auto;
+	padding:5px;
+	background:#DCD0C0;
+}
+
+#reset {
+	position: relative;
+	left: 820px;
+	top: -20px;
+}
+
+#entrada {
+	resize: none;
+}
+
+#salida {
+	resize: none;
+}
